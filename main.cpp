@@ -33,11 +33,28 @@ int main() {
     number_of_resources = find_resource_count(file_contents);
     number_of_processes = find_process_count(file_contents);
     int allocation_matrix_start = find_matrix_beginning(file_contents, "Allocation:");
-    int allocation_matrix_end = allocation_matrix_start + number_of_processes - 1;
+    int allocation_matrix_end = allocation_matrix_start + number_of_processes;
     int max_matrix_start = find_matrix_beginning(file_contents, "Max:");
-    int max_matrix_end = max_matrix_start + number_of_processes - 1;
+    int max_matrix_end = max_matrix_start + number_of_processes;
 
+    std::vector<int> temp;
+    for (auto i = allocation_matrix_start; i < allocation_matrix_end; ++i) {
+        int count = 0;
+        for (auto j = 0; j < file_contents[i].length(); ++j) {
+            if (file_contents[i].at(j) != ' ') {
+                ++count;
+                temp.push_back(file_contents[i].at(j) - 48);
 
+                if ((count % number_of_resources) == 0) {
+                    allocation_table.push_back(temp);
+                    temp.clear();
+                    count = 0;
+                }
+            }
+        }
+    }
+
+    std::cout << "ALLOCATION TABLE SIZE: " << allocation_table.size();
 
     std::cout << "------- BEGIN Information -------------\n";
     std::cout << "Number of Processes: " << number_of_processes << '\n';
@@ -46,6 +63,16 @@ int main() {
     std::cout << "Allocation End: " << allocation_matrix_end << '\n';
     std::cout << "Max Start: " << max_matrix_start << '\n';
     std::cout << "Max End: " << max_matrix_end << '\n';
+    std::cout << "\n";
+    std::cout << "--- ALLOC MATRIX ---\n";
+    for (auto i = allocation_matrix_start; i < allocation_matrix_end; ++i) {
+        std::cout << "    " << file_contents[i] << std::endl;
+    }
+    std::cout << "\n";
+    std::cout << "--- MAX MATRIX ---\n";
+    for (auto i = max_matrix_start; i < max_matrix_end; ++i) {
+        std::cout << "    " << file_contents[i] << std::endl;
+    }
     std::cout << "-------- END Information ------------\n ";
 
     return 0;
