@@ -5,6 +5,7 @@
 
 //std::vector<int> process_file(std::vector<std::string>);
 int find_resource_count(std::vector<std::string>);
+int find_process_count(std::vector<std::string>);
 
 int main() {
     std::ifstream file;
@@ -24,8 +25,9 @@ int main() {
     }
 
     file.close();
-    
+
     number_of_resources = find_resource_count(file_contents);
+    number_of_processes = find_process_count(file_contents);
 
     std::cout << "Number of Processes: " << number_of_processes << '\n';
     std::cout << "Number of Resources: " << number_of_resources << '\n';
@@ -34,22 +36,43 @@ int main() {
 
     return 0;
 }
+
+// INPUT: Takes a vector of strings and outputs the resource count
+// By counting the total amount of ints per line seperated by a ' '
+// RETURN: int count of resources
 int find_resource_count(std::vector<std::string> to_process){
     int resource_count = 0;
     for(auto i = 0; i < to_process.size(); ++i)
     {
         if(i == 0) {
             for(auto j = 0; j < to_process[i].length(); ++j)
-            {
-                    
-                    if(to_process[i].at(j) != ' ')
-                        ++resource_count;
+            {   
+                if(to_process[i].at(j) != ' ')
+                    ++resource_count;
             }
         }
     }
 
     return resource_count;
 }
+
+// INPUT: Takes a vector of strings and outputs the process count
+// By counting the lines between ";"
+// RETURN: int count of processes
+int find_process_count(std::vector<std::string> to_process){
+    int process_count = 0;
+    for(auto i = 0; i < to_process.size(); ++i)
+    {
+        if(to_process[i] == ";")
+            process_count = 0;
+        
+        if(to_process[i].length() > 1)
+            ++process_count;
+    }
+
+    return process_count;
+}
+
 /*
 std::vector<int> process_file(std::vector<std::string> contents) {
     int pos = 0;
