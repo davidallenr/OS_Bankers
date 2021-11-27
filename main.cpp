@@ -3,24 +3,28 @@
 #include <vector>
 #include <fstream>
 
-//std::vector<int> process_file(std::vector<std::string>);
 int find_resource_count(std::vector<std::string>);
 int find_process_count(std::vector<std::string>);
+std::vector<int> convert_to_int(std::string);
 
 int main() {
     std::ifstream file;
     std::string line;
     std::vector<std::string> file_contents;
+    std::vector<int> available_table;
+    std::vector<std::vector<int>> allocation_table;
+    std::vector<std::vector<int>> max_table;
+    std::vector<std::vector<int>> need_table;
     int number_of_processes = 0;
     int number_of_resources = 0;
 
     file.open("data.txt");
 
     //  Open file and store each line into a vector of strings  
-    if(file.is_open()){
-        while(getline(file, line))
-        {
+    if (file.is_open()){
+        while (getline(file, line)) {
             file_contents.push_back(line);
+            available_table = convert_to_int(line);
         }
     }
 
@@ -42,12 +46,10 @@ int main() {
 // RETURN: int count of resources
 int find_resource_count(std::vector<std::string> to_process){
     int resource_count = 0;
-    for(auto i = 0; i < to_process.size(); ++i)
-    {
-        if(i == 0) {
-            for(auto j = 0; j < to_process[i].length(); ++j)
-            {   
-                if(to_process[i].at(j) != ' ')
+    for (auto i = 0; i < to_process.size(); ++i) {
+        if (i == 0) {
+            for (auto j = 0; j < to_process[i].length(); ++j){   
+                if (to_process[i].at(j) != ' ')
                     ++resource_count;
             }
         }
@@ -61,30 +63,36 @@ int find_resource_count(std::vector<std::string> to_process){
 // RETURN: int count of processes
 int find_process_count(std::vector<std::string> to_process){
     int process_count = 0;
-    for(auto i = 0; i < to_process.size(); ++i)
-    {
-        if(to_process[i] == ";")
+    for (auto i = 0; i < to_process.size(); ++i) {
+        if (to_process[i] == "Allocation:" || to_process[i] == "Max:")
             process_count = 0;
-        
-        if(to_process[i].length() > 1)
+        else if (to_process[i].length() > 1)
             ++process_count;
     }
 
     return process_count;
 }
 
-/*
-std::vector<int> process_file(std::vector<std::string> contents) {
-    int pos = 0;
-    std::vector<int> units;
-    for(auto i = 2; i < contents.size(); ++i){
-        while ((pos = contents[i].find(' ')) != std::string::npos) {
-            units.push_back(std::stoi(contents[i].substr(0, pos)));
-            std::cout << "Pushing Back: " << contents[i].substr(0, pos) << std::endl;
-            contents[i].erase(0, pos + 1);
+std::vector<int> convert_to_int(std::string line_to_process) {
+    std::vector<int> processed_line;
+    int process_to_pos = 0;
+    int beginning_pos = 0;
+
+    for (auto i = 0; i < line_to_process.length(); ++i) {
+
+        if (line_to_process.at(i) != ' ' && line_to_process.at(i) != ';') {
+            /*
+            std::cout << "Process Pos: " << process_to_pos << "\n";
+            std::cout << "Begin Pos: " << beginning_pos << "\n";
+            std::cout << "PUSHING BACK: " << line_to_process.at(i) << "\n";
+            processed_line.push_back(std::stoi(line_to_process.at(i)));
+            */
         }
+        
+        
+        beginning_pos = process_to_pos;
+        
     }
-    
-    return units;
+
+    return processed_line;
 }
-*/
