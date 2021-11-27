@@ -3,13 +3,13 @@
 #include <vector>
 #include <fstream>
 
-std::vector<int> process_file(std::vector<std::string>);
+//std::vector<int> process_file(std::vector<std::string>);
+int find_resource_count(std::vector<std::string>);
 
 int main() {
     std::ifstream file;
     std::string line;
     std::vector<std::string> file_contents;
-    std::vector<int> table_data;
     int number_of_processes = 0;
     int number_of_resources = 0;
 
@@ -17,26 +17,16 @@ int main() {
 
     //  Open file and store each line into a vector of strings  
     if(file.is_open()){
-        while(getline(file, line, ';'))
+        while(getline(file, line))
         {
             file_contents.push_back(line);
         }
     }
 
     file.close();
-
-    for(int i=0; i < file_contents.size(); ++i){
-        
-        if(i == 0) //store the first line as processes
-            number_of_processes = std::stoi(file_contents[i]);
-        
-        if(i == 1) //store second line as resources
-            number_of_resources = std::stoi(file_contents[i]);
-
-    }
-
-    table_data = process_file(file_contents);
     
+    number_of_resources = find_resource_count(file_contents);
+
     std::cout << "Number of Processes: " << number_of_processes << '\n';
     std::cout << "Number of Resources: " << number_of_resources << '\n';
 
@@ -44,7 +34,23 @@ int main() {
 
     return 0;
 }
+int find_resource_count(std::vector<std::string> to_process){
+    int resource_count = 0;
+    for(auto i = 0; i < to_process.size(); ++i)
+    {
+        if(i == 0) {
+            for(auto j = 0; j < to_process[i].length(); ++j)
+            {
+                    
+                    if(to_process[i].at(j) != ' ')
+                        ++resource_count;
+            }
+        }
+    }
 
+    return resource_count;
+}
+/*
 std::vector<int> process_file(std::vector<std::string> contents) {
     int pos = 0;
     std::vector<int> units;
@@ -58,3 +64,4 @@ std::vector<int> process_file(std::vector<std::string> contents) {
     
     return units;
 }
+*/
