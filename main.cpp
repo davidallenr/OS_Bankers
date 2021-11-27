@@ -6,6 +6,7 @@
 int find_resource_count(std::vector<std::string>);
 int find_process_count(std::vector<std::string>);
 int find_matrix_beginning(std::vector<std::string>, std::string);
+std::vector<std::vector<int>> populate_2d_vector(std::vector<std::string>, int, int, int);
 std::vector<int> convert_to_int(std::string);
 
 int main() {
@@ -36,25 +37,9 @@ int main() {
     int allocation_matrix_end = allocation_matrix_start + number_of_processes;
     int max_matrix_start = find_matrix_beginning(file_contents, "Max:");
     int max_matrix_end = max_matrix_start + number_of_processes;
+    allocation_table = populate_2d_vector(file_contents, allocation_matrix_start, allocation_matrix_end, number_of_resources);
+    max_table = populate_2d_vector(file_contents, max_matrix_start, max_matrix_end, number_of_resources);
 
-    std::vector<int> temp;
-    for (auto i = allocation_matrix_start; i < allocation_matrix_end; ++i) {
-        int count = 0;
-        for (auto j = 0; j < file_contents[i].length(); ++j) {
-            if (file_contents[i].at(j) != ' ') {
-                ++count;
-                temp.push_back(file_contents[i].at(j) - 48);
-
-                if ((count % number_of_resources) == 0) {
-                    allocation_table.push_back(temp);
-                    temp.clear();
-                    count = 0;
-                }
-            }
-        }
-    }
-
-    std::cout << "ALLOCATION TABLE SIZE: " << allocation_table.size();
 
     std::cout << "------- BEGIN Information -------------\n";
     std::cout << "Number of Processes: " << number_of_processes << '\n';
@@ -63,6 +48,8 @@ int main() {
     std::cout << "Allocation End: " << allocation_matrix_end << '\n';
     std::cout << "Max Start: " << max_matrix_start << '\n';
     std::cout << "Max End: " << max_matrix_end << '\n';
+    std::cout << "Allocation Table Size: " << allocation_table.size() << '\n';
+    std::cout << "Max Table Size: " << max_table.size() << '\n';
     std::cout << "\n";
     std::cout << "--- ALLOC MATRIX ---\n";
     for (auto i = allocation_matrix_start; i < allocation_matrix_end; ++i) {
@@ -122,6 +109,35 @@ int find_matrix_beginning(std::vector<std::string> to_process, std::string strin
     }
 
     return index;
+}
+
+
+// INPUT: Takes a vector<std::string> and returns std::vector<std::vector<int>> based on a start end and resource number.
+// RETURN: int location of the string + 1
+// EXAMPLE: "<9, 0, 2, 3, 0, 3>" with a resource of 3 returns 
+//      <<9, 0, 2>, 
+//       <3, 0, 3>>
+std::vector<std::vector<int>> populate_2d_vector(std::vector<std::string> input_file, int start, int end, int resource_num) {
+    std::vector<int> temp;
+    std::vector<std::vector<int>> temp_2d;
+
+    for (auto i = start; i < end; ++i) {
+        int count = 0;
+        for (auto j = 0; j < input_file[i].length(); ++j) {
+            if (input_file[i].at(j) != ' ') {
+                ++count;
+                temp.push_back(input_file[i].at(j) - 48);
+
+                if ((count % resource_num) == 0) {
+                    temp_2d.push_back(temp);
+                    temp.clear();
+                    count = 0;
+                }
+            }
+        }
+    }
+
+    return temp_2d;
 }
 
 // INPUT: Takes a string of ints separated by ' ' and returns the process count
