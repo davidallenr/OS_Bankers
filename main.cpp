@@ -7,7 +7,6 @@ int find_resource_count(std::vector<std::string>);
 int find_process_count(std::vector<std::string>);
 int find_matrix_beginning(std::vector<std::string>, std::string);
 std::vector<std::vector<int>> populate_2d_vector(std::vector<std::string>, int, int, int);
-std::vector<int> convert_to_int(std::string);
 
 int main() {
     std::ifstream file;
@@ -138,17 +137,4 @@ std::vector<std::vector<int>> populate_2d_vector(std::vector<std::string> input_
     }
 
     return temp_2d;
-}
-
-// INPUT: Takes a string of ints separated by ' ' and returns the process count
-// RETURN: int count of processes
-// EXAMPLE: "9 0 1" returns <9, 0, 1>
-std::vector<int> convert_to_int(std::string line_to_process) {
-    std::vector<int> processed_line;
-
-    for (auto i = 0; i < line_to_process.length(); ++i) {
-        processed_line.push_back((int)line_to_process.at(i));
-    }
-
-    return processed_line;
 }
