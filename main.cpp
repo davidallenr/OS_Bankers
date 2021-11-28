@@ -10,7 +10,7 @@ std::vector<std::vector<int>> CreateTable2D(std::vector<std::string>, int, int, 
 std::vector<int> CreateAvailableTable(std::vector<std::string>);
 std::vector<std::vector<int>> CreateNeedTable2D(std::vector<std::vector<int>>, std::vector<std::vector<int>>, int);
 std::vector<int> IsStateSafe(std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>, int);
-void DisplayInformation(std::vector<std::string>, int, int, int, int, int, int, std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>);
+void DisplayInformation(std::vector<int>, std::vector<std::string>, int, int, int, int, int, int, std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>);
 
 int main() {
     std::ifstream file;
@@ -38,10 +38,9 @@ int main() {
     std::vector<std::vector<int>> allocation_table = CreateTable2D(file_contents, allocation_matrix_start, allocation_matrix_end, number_of_resources);
     std::vector<std::vector<int>> max_table = CreateTable2D(file_contents, max_matrix_start, max_matrix_end, number_of_resources);
     std::vector<std::vector<int>> need_table = CreateNeedTable2D(max_table, allocation_table, number_of_resources);
-
-    DisplayInformation(file_contents, number_of_processes, number_of_resources, allocation_matrix_start, allocation_matrix_end, max_matrix_start, max_matrix_end, allocation_table, max_table, available_table);
-
     std::vector<int> results = IsStateSafe(allocation_table, need_table, available_table, number_of_processes);
+
+    DisplayInformation(results,file_contents, number_of_processes, number_of_resources, allocation_matrix_start, allocation_matrix_end, max_matrix_start, max_matrix_end, allocation_table, max_table, available_table);
     
     return 0;
 }
@@ -165,24 +164,59 @@ std::vector<std::vector<int>> CreateNeedTable2D(std::vector<std::vector<int>> ma
 std::vector<int> IsStateSafe(std::vector<std::vector<int>> allocation_tbl, std::vector<std::vector<int>> need_tbl, std::vector<int> available_tbl, int process_num) {
     std::vector<int> work = available_tbl;
     std::vector<bool> finish(process_num, false); //Finish all values initialized to 0
-    bool deadlock = false;
-
-    while (!deadlock) {
+    std::vector<int> process_order;
+    
+    while (process_order.size() < process_num) {
         for (auto i = 0; i < process_num; ++i) {
-            for (auto k = 0; k < work.size(); ++k) {
+            if (finish[i]) 
+                continue;
+
+            if (!finish[i]) {
+                bool need_less_than_work = false;
+
+                for (auto j = 0; j < work.size(); ++j) {
+                    if (need_tbl[i][j] < work[j])
+                        need_less_than_work = true;
+
+                    if (need_less_than_work)
+                        continue;
+                    
+                }
+            } 
+
+            for (auto k = 0; k < work.size(); ++k) 
                 work[k] += allocation_tbl[i][k];
-            }
 
             finish[i] = true;
+
+            process_order.push_back(i);
+        }
+
+    }
+
+    // Check if system in safe state
+    std::vector<int> deadlock(1,0);
+    for (auto i = 0; i < finish.size(); ++i) {
+        if (!finish[i]) {
+            deadlock[0] = -1;
+            continue;
         }
     }
+
+    // If deadlock detected return vector with value -1
+    if (deadlock[0] == -1) {
+        process_order.clear();
+        process_order = deadlock;
+    }
+
     //TODO CREATE LOGIC FOR SAFE STATE HERE
-    return work;
+    return process_order;
 }
 
 //TODO: Create an information class that has this information contained within. That way i'll only have (Information information) as arguments
-void DisplayInformation(std::vector<std::string> to_process, int process_num, int resource_num, int alloc_start, int alloc_end, int max_start, int max_end, std::vector<std::vector<int>> alloc_table, std::vector<std::vector<int>> mx_table, std::vector<int> avail_table  ) {
-    std::cout << "------- BEGIN Information -------------\n";
+void DisplayInformation(std::vector<int> result, std::vector<std::string> to_process, int process_num, int resource_num, int alloc_start, int alloc_end, int max_start, int max_end, std::vector<std::vector<int>> alloc_table, std::vector<std::vector<int>> mx_table, std::vector<int> avail_table  ) {
+    std::cout << "------- BEGIN INFORMATION -------------\n";
+    std::cout << "--- DATA.TXT INFORMATION ---\n";
     std::cout << "Number of Processes: " << process_num << '\n';
     std::cout << "Number of Resources: " << resource_num << '\n';
     std::cout << "Allocation Start: " << alloc_start << '\n';
@@ -198,14 +232,31 @@ void DisplayInformation(std::vector<std::string> to_process, int process_num, in
         std::cout << avail_table[i] << " ";
     }
     std::cout << "\n";
-    std::cout << "--- ALLOC MATRIX ---\n";
+    std::cout << "--- ALLOC TABLE ---\n";
     for (auto i = alloc_start; i < alloc_end; ++i) {
         std::cout << "    " << to_process[i] << std::endl;
     }
     std::cout << "\n";
-    std::cout << "--- MAX MATRIX ---\n";
+    std::cout << "--- MAX TABLE ---\n";
     for (auto i = max_start; i < max_end; ++i) {
         std::cout << "    " << to_process[i] << std::endl;
     }
-    std::cout << "-------- END Information ------------\n ";
+
+
+    std::cout << "\n--- PROCESS STATE ---\n";
+    if (result[0] != -1) {
+        std::cout << "In safe state! \nProcess Order: ";
+
+        for (int i = 0; i < result.size(); ++i) {
+            std::cout << "P" << result[i];
+
+            if(i != (result.size() - 1))
+                std::cout << " -> ";
+            else
+                std::cout << "\n";
+        }
+    } else 
+        std::cout << "NOT in a safe state! Deadlock Detected";
+
+    std::cout << "-------- END INFORMATION ------------\n ";
 }
