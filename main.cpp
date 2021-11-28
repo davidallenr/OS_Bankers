@@ -41,6 +41,7 @@ int main() {
 
     DisplayInformation(file_contents, number_of_processes, number_of_resources, allocation_matrix_start, allocation_matrix_end, max_matrix_start, max_matrix_end, allocation_table, max_table, available_table);
 
+    std::vector<int> results = IsStateSafe(allocation_table, need_table, available_table, number_of_processes);
     
     return 0;
 }
