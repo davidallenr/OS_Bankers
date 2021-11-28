@@ -138,7 +138,7 @@ std::vector<int> CreateAvailableTable(std::vector<std::string> to_process) {
     return temp;
 }
 
-// INPUT: Takes (2) std::vector<std::vector<int>> and returns std::vector<std::vector<int>> based on LHS - RHS.
+// INPUT: Takes (2) std::vector<std::vector<int>> and returns std::vector<std::vector<int>> based on max - allocation.
 // RETURN: 2D Need vector table
 std::vector<std::vector<int>> CreateNeedTable2D(std::vector<std::vector<int>> max, std::vector<std::vector<int>> available, int resource_num) {
     std::vector<int> temp;
@@ -162,10 +162,22 @@ std::vector<std::vector<int>> CreateNeedTable2D(std::vector<std::vector<int>> ma
     return temp_2d;
 }
 
-std::vector<int> IsStateSafe(std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>, int) {
-    std::vector<int> temp;
+std::vector<int> IsStateSafe(std::vector<std::vector<int>> allocation_tbl, std::vector<std::vector<int>> need_tbl, std::vector<int> available_tbl, int process_num) {
+    std::vector<int> work = available_tbl;
+    std::vector<bool> finish(process_num, false); //Finish all values initialized to 0
+    bool deadlock = false;
+
+    while (!deadlock) {
+        for (auto i = 0; i < process_num; ++i) {
+            for (auto k = 0; k < work.size(); ++k) {
+                work[k] += allocation_tbl[i][k];
+            }
+
+            finish[i] = true;
+        }
+    }
     //TODO CREATE LOGIC FOR SAFE STATE HERE
-    return temp;
+    return work;
 }
 
 //TODO: Create an information class that has this information contained within. That way i'll only have (Information information) as arguments
