@@ -9,8 +9,8 @@ int find_matrix_beginning(std::vector<std::string>, std::string);
 std::vector<std::vector<int>> populate_2d_vector(std::vector<std::string>, int, int, int);
 std::vector<int> populate_available(std::vector<std::string>);
 std::vector<std::vector<int>> return_need_table(std::vector<std::vector<int>>, std::vector<std::vector<int>>, int);
+std::vector<int> is_state_safe(std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>, int);
 void display_information(std::vector<std::string>, int, int, int, int, int, int, std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>);
-
 
 int main() {
     std::ifstream file;
@@ -40,14 +40,8 @@ int main() {
     std::vector<std::vector<int>> need_table = return_need_table(max_table, allocation_table, number_of_resources);
 
     display_information(file_contents, number_of_processes, number_of_resources, allocation_matrix_start, allocation_matrix_end, max_matrix_start, max_matrix_end, allocation_table, max_table, available_table);
-    std::cout << need_table.size();
-    /*
-    for (int i = 0; i < need_table.size(); ++i) {
-        for (int j = 0; j < need_table[i].size(); ++j) {
-            std::cout << need_table[i][j] << ' ';
-        }
-    }
-    */
+
+    
     return 0;
 }
 
@@ -167,6 +161,11 @@ std::vector<std::vector<int>> return_need_table(std::vector<std::vector<int>> ma
     return temp_2d;
 }
 
+std::vector<int> is_state_safe(std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>, int) {
+    
+}
+
+//TODO: Create an information class that has this information contained within. That way i'll only have (Information information) as arguments
 void display_information(std::vector<std::string> to_process, int process_num, int resource_num, int alloc_start, int alloc_end, int max_start, int max_end, std::vector<std::vector<int>> alloc_table, std::vector<std::vector<int>> mx_table, std::vector<int> avail_table  ) {
     std::cout << "------- BEGIN Information -------------\n";
     std::cout << "Number of Processes: " << process_num << '\n';
