@@ -7,6 +7,7 @@ int find_resource_count(std::vector<std::string>);
 int find_process_count(std::vector<std::string>);
 int find_matrix_beginning(std::vector<std::string>, std::string);
 std::vector<std::vector<int>> populate_2d_vector(std::vector<std::string>, int, int, int);
+std::vector<int> populate_available(std::vector<std::string>);
 
 int main() {
     std::ifstream file;
@@ -36,6 +37,7 @@ int main() {
     int allocation_matrix_end = allocation_matrix_start + number_of_processes;
     int max_matrix_start = find_matrix_beginning(file_contents, "Max:");
     int max_matrix_end = max_matrix_start + number_of_processes;
+    available_table = populate_available(file_contents);
     allocation_table = populate_2d_vector(file_contents, allocation_matrix_start, allocation_matrix_end, number_of_resources);
     max_table = populate_2d_vector(file_contents, max_matrix_start, max_matrix_end, number_of_resources);
 
@@ -49,6 +51,12 @@ int main() {
     std::cout << "Max End: " << max_matrix_end << '\n';
     std::cout << "Allocation Table Size: " << allocation_table.size() << '\n';
     std::cout << "Max Table Size: " << max_table.size() << '\n';
+    std::cout << "\n";
+    std::cout << "--- AVAIL TABLE ---\n";
+    std::cout << "    ";
+    for (auto i = 0; i < available_table.size(); ++i) {
+        std::cout << available_table[i] << " ";
+    }
     std::cout << "\n";
     std::cout << "--- ALLOC MATRIX ---\n";
     for (auto i = allocation_matrix_start; i < allocation_matrix_end; ++i) {
@@ -137,4 +145,21 @@ std::vector<std::vector<int>> populate_2d_vector(std::vector<std::string> input_
     }
 
     return temp_2d;
+}
+
+// INPUT: Takes a vector of strings and outputs the resource count
+// By counting the total amount of ints per line seperated by a ' '
+// RETURN: int count of resources
+std::vector<int> populate_available(std::vector<std::string> to_process) {
+    std::vector<int> temp;
+    for (auto i = 0; i < to_process.size(); ++i) {
+        if (i == 0) {
+            for (auto j = 0; j < to_process[i].length(); ++j){   
+                if (to_process[i].at(j) != ' ')
+                    temp.push_back(to_process[i].at(j) - 48);
+            }
+        }
+    }
+
+    return temp;
 }
