@@ -3,14 +3,14 @@
 #include <vector>
 #include <fstream>
 
-int find_resource_count(std::vector<std::string>);
-int find_process_count(std::vector<std::string>);
-int find_matrix_beginning(std::vector<std::string>, std::string);
-std::vector<std::vector<int>> populate_2d_vector(std::vector<std::string>, int, int, int);
-std::vector<int> populate_available(std::vector<std::string>);
-std::vector<std::vector<int>> return_need_table(std::vector<std::vector<int>>, std::vector<std::vector<int>>, int);
-std::vector<int> is_state_safe(std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>, int);
-void display_information(std::vector<std::string>, int, int, int, int, int, int, std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>);
+int FindResourceCount(std::vector<std::string>);
+int FindProcessCount(std::vector<std::string>);
+int FindMatrixBeginning(std::vector<std::string>, std::string);
+std::vector<std::vector<int>> CreateTable2D(std::vector<std::string>, int, int, int);
+std::vector<int> CreateAvailableTable(std::vector<std::string>);
+std::vector<std::vector<int>> CreateNeedTable2D(std::vector<std::vector<int>>, std::vector<std::vector<int>>, int);
+std::vector<int> IsStateSafe(std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>, int);
+void DisplayInformation(std::vector<std::string>, int, int, int, int, int, int, std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>);
 
 int main() {
     std::ifstream file;
@@ -28,18 +28,18 @@ int main() {
 
     file.close();
 
-    int number_of_resources = find_resource_count(file_contents);
-    int number_of_processes = find_process_count(file_contents);
-    int allocation_matrix_start = find_matrix_beginning(file_contents, "Allocation:");
+    int number_of_resources = FindResourceCount(file_contents);
+    int number_of_processes = FindProcessCount(file_contents);
+    int allocation_matrix_start = FindMatrixBeginning(file_contents, "Allocation:");
     int allocation_matrix_end = allocation_matrix_start + number_of_processes;
-    int max_matrix_start = find_matrix_beginning(file_contents, "Max:");
+    int max_matrix_start = FindMatrixBeginning(file_contents, "Max:");
     int max_matrix_end = max_matrix_start + number_of_processes;
-    std::vector<int> available_table = populate_available(file_contents);
-    std::vector<std::vector<int>> allocation_table = populate_2d_vector(file_contents, allocation_matrix_start, allocation_matrix_end, number_of_resources);
-    std::vector<std::vector<int>> max_table = populate_2d_vector(file_contents, max_matrix_start, max_matrix_end, number_of_resources);
-    std::vector<std::vector<int>> need_table = return_need_table(max_table, allocation_table, number_of_resources);
+    std::vector<int> available_table = CreateAvailableTable(file_contents);
+    std::vector<std::vector<int>> allocation_table = CreateTable2D(file_contents, allocation_matrix_start, allocation_matrix_end, number_of_resources);
+    std::vector<std::vector<int>> max_table = CreateTable2D(file_contents, max_matrix_start, max_matrix_end, number_of_resources);
+    std::vector<std::vector<int>> need_table = CreateNeedTable2D(max_table, allocation_table, number_of_resources);
 
-    display_information(file_contents, number_of_processes, number_of_resources, allocation_matrix_start, allocation_matrix_end, max_matrix_start, max_matrix_end, allocation_table, max_table, available_table);
+    DisplayInformation(file_contents, number_of_processes, number_of_resources, allocation_matrix_start, allocation_matrix_end, max_matrix_start, max_matrix_end, allocation_table, max_table, available_table);
 
     
     return 0;
@@ -48,7 +48,7 @@ int main() {
 // INPUT: Takes a vector of strings and outputs the resource count
 // By counting the total amount of ints per line seperated by a ' '
 // RETURN: int count of resources
-int find_resource_count(std::vector<std::string> to_process) {
+int FindResourceCount(std::vector<std::string> to_process) {
     int resource_count = 0;
     for (auto i = 0; i < to_process.size(); ++i) {
         if (i == 0) {
@@ -64,7 +64,7 @@ int find_resource_count(std::vector<std::string> to_process) {
 
 // INPUT: Takes a vector of strings and outputs the process count
 // RETURN: int count of processes
-int find_process_count(std::vector<std::string> to_process) {
+int FindProcessCount(std::vector<std::string> to_process) {
     int process_count = 0;
     for (auto i = 0; i < to_process.size(); ++i) {
         if (to_process[i] == "Allocation:" || to_process[i] == "Max:")
@@ -79,7 +79,7 @@ int find_process_count(std::vector<std::string> to_process) {
 // INPUT: Takes a vector<std::string> and returns the location of the string that matches.
 // RETURN: int location of the string + 1
 // EXAMPLE: "<9, 0, Allocation:, 2>" returns 3 
-int find_matrix_beginning(std::vector<std::string> to_process, std::string string_to_match) {
+int FindMatrixBeginning(std::vector<std::string> to_process, std::string string_to_match) {
     int index = -1;
 
     for (auto i=0; i < to_process.size(); ++i) {
@@ -97,7 +97,7 @@ int find_matrix_beginning(std::vector<std::string> to_process, std::string strin
 // EXAMPLE: "<9, 0, 2, 3, 0, 3>" with a resource of 3 returns 
 //      <<9, 0, 2>, 
 //       <3, 0, 3>>
-std::vector<std::vector<int>> populate_2d_vector(std::vector<std::string> input_file, int start, int end, int resource_num) {
+std::vector<std::vector<int>> CreateTable2D(std::vector<std::string> input_file, int start, int end, int resource_num) {
     std::vector<int> temp;
     std::vector<std::vector<int>> temp_2d;
 
@@ -123,7 +123,7 @@ std::vector<std::vector<int>> populate_2d_vector(std::vector<std::string> input_
 // INPUT: Takes a vector of strings and outputs the resource count
 // By counting the total amount of ints per line seperated by a ' '
 // RETURN: int count of resources
-std::vector<int> populate_available(std::vector<std::string> to_process) {
+std::vector<int> CreateAvailableTable(std::vector<std::string> to_process) {
     std::vector<int> temp;
     for (auto i = 0; i < to_process.size(); ++i) {
         if (i == 0) {
@@ -139,7 +139,7 @@ std::vector<int> populate_available(std::vector<std::string> to_process) {
 
 // INPUT: Takes (2) std::vector<std::vector<int>> and returns std::vector<std::vector<int>> based on LHS - RHS.
 // RETURN: 2D Need vector table
-std::vector<std::vector<int>> return_need_table(std::vector<std::vector<int>> max, std::vector<std::vector<int>> available, int resource_num) {
+std::vector<std::vector<int>> CreateNeedTable2D(std::vector<std::vector<int>> max, std::vector<std::vector<int>> available, int resource_num) {
     std::vector<int> temp;
     std::vector<std::vector<int>> temp_2d;
 
@@ -161,12 +161,14 @@ std::vector<std::vector<int>> return_need_table(std::vector<std::vector<int>> ma
     return temp_2d;
 }
 
-std::vector<int> is_state_safe(std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>, int) {
-    
+std::vector<int> IsStateSafe(std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>, int) {
+    std::vector<int> temp;
+    //TODO CREATE LOGIC FOR SAFE STATE HERE
+    return temp;
 }
 
 //TODO: Create an information class that has this information contained within. That way i'll only have (Information information) as arguments
-void display_information(std::vector<std::string> to_process, int process_num, int resource_num, int alloc_start, int alloc_end, int max_start, int max_end, std::vector<std::vector<int>> alloc_table, std::vector<std::vector<int>> mx_table, std::vector<int> avail_table  ) {
+void DisplayInformation(std::vector<std::string> to_process, int process_num, int resource_num, int alloc_start, int alloc_end, int max_start, int max_end, std::vector<std::vector<int>> alloc_table, std::vector<std::vector<int>> mx_table, std::vector<int> avail_table  ) {
     std::cout << "------- BEGIN Information -------------\n";
     std::cout << "Number of Processes: " << process_num << '\n';
     std::cout << "Number of Resources: " << resource_num << '\n';
