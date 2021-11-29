@@ -36,6 +36,8 @@ The first line must be the available table with each int separated by a space.
 The second line must be "Allocation:" with a newline that has the allocation table separated by space.
 After the allocation table on it's own line must have "Max:" with a newline that has the allocation table separated by space.
 
+ERROR CHECKING: Has not been fully implimented. This assumes you follow the data.txt file structure and setup your matrix's to appropriate dimensions.
+
 # OUTPUT
 1. Expected Sample Output
    ```sh
