@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <cstdlib>
 
 int FindResourceCount(std::vector<std::string>);
 int FindProcessCount(std::vector<std::string>);
@@ -24,7 +25,9 @@ int main() {
         while (getline(file, line)) {
             file_contents.push_back(line);
         }
-    }
+    } else 
+        exit(EXIT_FAILURE);
+
 
     file.close();
 
@@ -37,6 +40,13 @@ int main() {
     std::vector<int> available_table = CreateAvailableTable(file_contents);
     std::vector<std::vector<int>> allocation_table = CreateTable2D(file_contents, allocation_matrix_start, allocation_matrix_end, number_of_resources);
     std::vector<std::vector<int>> max_table = CreateTable2D(file_contents, max_matrix_start, max_matrix_end, number_of_resources);
+
+    // Compare table size and if they do not match exit.
+    if (allocation_table[0].size() != max_table[0].size() || allocation_table.size() != max_table.size()) { 
+        std::cout << "\n TABLE SIZE DOES NOT MATCH. PLEASE CHECK data.txt";
+        exit(EXIT_FAILURE);
+    }
+
     std::vector<std::vector<int>> need_table = CreateNeedTable2D(max_table, allocation_table, number_of_resources);
     std::vector<int> results = GetProcessOrderIfSafeState(allocation_table, need_table, available_table, number_of_processes);
 
@@ -161,6 +171,12 @@ std::vector<std::vector<int>> CreateNeedTable2D(std::vector<std::vector<int>> ma
     return temp_2d;
 }
 
+// Function to return the process order of the safe state.
+// INPUT: Takes in (2) 2D vectors for the allocatin and need table. 
+//        Takes 1 Vector containing the available table.
+//        Takes 1 int for the number of processes
+// RETURN SUCCESS: Vector containing process order for safe state.
+// RETURN FAILURE: Vector containing -1.
 std::vector<int> GetProcessOrderIfSafeState(std::vector<std::vector<int>> allocation_tbl, std::vector<std::vector<int>> need_tbl, std::vector<int> available_tbl, int process_num) {
     std::vector<int> work = available_tbl;
     std::vector<bool> finish(process_num, false); //Finish all values initialized to 0
@@ -255,8 +271,10 @@ void DisplayInformation(std::vector<int> result, std::vector<std::string> to_pro
             else
                 std::cout << "\n";
         }
-    } else 
+    } else {
         std::cout << "NOT in a safe state! Deadlock Detected";
+        exit(EXIT_FAILURE);
+    }
 
     std::cout << "-------- END INFORMATION ------------\n ";
 }
