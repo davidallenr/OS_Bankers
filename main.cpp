@@ -172,16 +172,16 @@ std::vector<int> IsStateSafe(std::vector<std::vector<int>> allocation_tbl, std::
                 continue;
 
             if (!finish[i]) {
-                bool need_less_than_work = false;
+                bool need_greater_than_work = false;
 
                 for (auto j = 0; j < work.size(); ++j) {
-                    if (need_tbl[i][j] < work[j])
-                        need_less_than_work = true;
-
-                    if (need_less_than_work)
-                        continue;
-                    
+                    if (need_tbl[i][j] > work[j])
+                        need_greater_than_work = true;
                 }
+
+                if (need_greater_than_work)
+                        continue;
+
             } 
 
             for (auto k = 0; k < work.size(); ++k) 
@@ -245,7 +245,7 @@ void DisplayInformation(std::vector<int> result, std::vector<std::string> to_pro
 
     std::cout << "\n--- PROCESS STATE ---\n";
     if (result[0] != -1) {
-        std::cout << "In safe state! \nProcess Order: ";
+        std::cout << "In safe state! \nSafe Sequence: ";
 
         for (int i = 0; i < result.size(); ++i) {
             std::cout << "P" << result[i];
