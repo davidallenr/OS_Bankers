@@ -9,7 +9,7 @@ int FindMatrixBeginning(std::vector<std::string>, std::string);
 std::vector<std::vector<int>> CreateTable2D(std::vector<std::string>, int, int, int);
 std::vector<int> CreateAvailableTable(std::vector<std::string>);
 std::vector<std::vector<int>> CreateNeedTable2D(std::vector<std::vector<int>>, std::vector<std::vector<int>>, int);
-std::vector<int> IsStateSafe(std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>, int);
+std::vector<int> GetProcessOrderIfSafeState(std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>, int);
 void DisplayInformation(std::vector<int>, std::vector<std::string>, int, int, int, int, int, int, std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<int>);
 
 int main() {
@@ -38,7 +38,7 @@ int main() {
     std::vector<std::vector<int>> allocation_table = CreateTable2D(file_contents, allocation_matrix_start, allocation_matrix_end, number_of_resources);
     std::vector<std::vector<int>> max_table = CreateTable2D(file_contents, max_matrix_start, max_matrix_end, number_of_resources);
     std::vector<std::vector<int>> need_table = CreateNeedTable2D(max_table, allocation_table, number_of_resources);
-    std::vector<int> results = IsStateSafe(allocation_table, need_table, available_table, number_of_processes);
+    std::vector<int> results = GetProcessOrderIfSafeState(allocation_table, need_table, available_table, number_of_processes);
 
     DisplayInformation(results,file_contents, number_of_processes, number_of_resources, allocation_matrix_start, allocation_matrix_end, max_matrix_start, max_matrix_end, allocation_table, max_table, available_table);
     
@@ -161,7 +161,7 @@ std::vector<std::vector<int>> CreateNeedTable2D(std::vector<std::vector<int>> ma
     return temp_2d;
 }
 
-std::vector<int> IsStateSafe(std::vector<std::vector<int>> allocation_tbl, std::vector<std::vector<int>> need_tbl, std::vector<int> available_tbl, int process_num) {
+std::vector<int> GetProcessOrderIfSafeState(std::vector<std::vector<int>> allocation_tbl, std::vector<std::vector<int>> need_tbl, std::vector<int> available_tbl, int process_num) {
     std::vector<int> work = available_tbl;
     std::vector<bool> finish(process_num, false); //Finish all values initialized to 0
     std::vector<int> process_order;
