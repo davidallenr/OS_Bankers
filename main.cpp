@@ -50,8 +50,9 @@ int main() {
 
 // INPUT: Takes a vector of strings and outputs the resource count
 // By counting the total amount of ints per line seperated by a ' '
-// RETURN: int count of resources
-// TODO: FIX RESOURCE COUNT TO CHECK AND MAKE SURE RESOURCES FOR ALLOC AND MAX MATCH
+// RETURN SUCCESS: int count of resources
+// FAIL: Exit program operation with error message.
+// TODO: RESOURCE COUNT SORTA WORKS, CHANGE TO WORK IN ALL CASES
 int FindResourceCount(std::vector<std::string> to_process) {
     int resource_count = 0;
     for (auto i = 0; i < to_process.size(); ++i) {
@@ -63,11 +64,42 @@ int FindResourceCount(std::vector<std::string> to_process) {
         }
     }
 
+    int allocation_resource_count = 0;
+    for (auto i = 0; i < to_process.size(); ++i) {
+        if (to_process[i - 1] == "Allocation:") {
+            for (auto j = 0; j < to_process[i].length(); ++j){   
+                if (to_process[i].at(j) != ' ')
+                    ++allocation_resource_count;
+            }
+        }
+    }
+
+    int max_resource_count = 0;
+    for (auto i = 0; i < to_process.size(); ++i) {
+        if (i >= 1) {
+            if (to_process[i - 1] == "Allocation:") {
+                for (auto j = 0; j < to_process[i].length(); ++j){   
+                    if (to_process[i].at(j) != ' ')
+                        ++max_resource_count;
+                }
+            }
+        }
+    }
+
+    if (resource_count != allocation_resource_count || resource_count != max_resource_count) { 
+        std::cout << "\n----------------- ERROR -----------------------------";
+        std::cout << "\nRESOURCE COUNT DOES NOT MATCH. PLEASE CHECK data.txt";
+        std::cout << "\nPROGRAM EXIT\n\n" << std::endl;
+
+        exit(EXIT_FAILURE);
+    }
+
     return resource_count;
 }
 
 // INPUT: Takes a vector of strings and outputs the process count
-// RETURN: int count of processes
+// RETURN SUCCESS: Process count
+// FAIL: Exit program execution.
 int FindProcessCount(std::vector<std::string> to_process) {
     int allocation_process_count = 0;
     int max_process_count = 0;
