@@ -51,6 +51,7 @@ int main() {
 // INPUT: Takes a vector of strings and outputs the resource count
 // By counting the total amount of ints per line seperated by a ' '
 // RETURN: int count of resources
+// TODO: FIX RESOURCE COUNT TO CHECK AND MAKE SURE RESOURCES FOR ALLOC AND MAX MATCH
 int FindResourceCount(std::vector<std::string> to_process) {
     int resource_count = 0;
     for (auto i = 0; i < to_process.size(); ++i) {
