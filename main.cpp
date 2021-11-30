@@ -40,13 +40,6 @@ int main() {
     std::vector<int> available_table = CreateAvailableTable(file_contents);
     std::vector<std::vector<int>> allocation_table = CreateTable2D(file_contents, allocation_matrix_start, allocation_matrix_end, number_of_resources);
     std::vector<std::vector<int>> max_table = CreateTable2D(file_contents, max_matrix_start, max_matrix_end, number_of_resources);
-
-    // Compare table size and if they do not match exit.
-    if (allocation_table[0].size() != max_table[0].size() || allocation_table.size() != max_table.size()) { 
-        std::cout << "\n TABLE SIZE DOES NOT MATCH. PLEASE CHECK data.txt";
-        exit(EXIT_FAILURE);
-    }
-
     std::vector<std::vector<int>> need_table = CreateNeedTable2D(max_table, allocation_table, number_of_resources);
     std::vector<int> results = GetProcessOrderIfSafeState(allocation_table, need_table, available_table, number_of_processes);
 
@@ -75,12 +68,41 @@ int FindResourceCount(std::vector<std::string> to_process) {
 // INPUT: Takes a vector of strings and outputs the process count
 // RETURN: int count of processes
 int FindProcessCount(std::vector<std::string> to_process) {
-    int process_count = 0;
+    int allocation_process_count = 0;
+    int max_process_count = 0;
+    int process_count = -1;
+    bool allocation_found = false;
+    bool max_found = false;
+
     for (auto i = 0; i < to_process.size(); ++i) {
-        if (to_process[i] == "Allocation:" || to_process[i] == "Max:")
-            process_count = 0;
-        else if (to_process[i].length() > 1)
-            ++process_count;
+        if (to_process[i] == "Allocation:") {
+            allocation_process_count = 0;
+            allocation_found = true;
+        } else if (to_process[i] == "Max:")
+            max_found = true;
+        else if (to_process[i].length() > 1 && allocation_found && !max_found)
+            ++allocation_process_count;
+    }
+
+    max_found = false;
+    for (auto i = 0; i < to_process.size(); ++i) {
+        if (to_process[i] == "Max:") {
+            max_process_count = 0;
+            max_found = true;
+        } else if (to_process[i].length() > 1 && allocation_found && max_found)
+            ++max_process_count;
+
+    }
+
+    if (allocation_process_count == max_process_count)
+        process_count = allocation_process_count;
+
+    if (process_count == -1) { 
+        std::cout << "\n----------------- ERROR -----------------------------";
+        std::cout << "\nPROCESSOR COUNT DOES NOT MATCH. PLEASE CHECK data.txt";
+        std::cout << "\nPROGRAM EXIT\n\n" << std::endl;
+
+        exit(EXIT_FAILURE);
     }
 
     return process_count;
